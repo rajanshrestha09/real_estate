@@ -49,7 +49,7 @@ const agentSchema = new Schema(
         profileImage: {
             type: String,
         },
-        refreshToken:{
+        refreshToken: {
             type: String
         }
     },
@@ -58,21 +58,43 @@ const agentSchema = new Schema(
     }
 )
 
-agentSchema.pre("save",async function(next){
-    if(!this.isModified("password")) return next();
+agentSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
     this.password = await bcypt.hash(this.password, 10);
     next();
 })
 
-agentSchema.methods.isPasswordCorrect = async function(password){
+agentSchema.methods.isPasswordCorrect = async function (password) {
     return await bcypt.compare(password, this.password)
 }
 
-agentSchema.methods.generateAccessToken = await jwt.sign(
-    {
+agentSchema.methods.generateAccessToken = function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+            email: this.email,
+            firstName: this.firstName
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
+    )
+}
 
-    }
-)
+
+
+agentSchema.methods.generateRefreshToken = function () {
+    jwt.sign(
+        {
+            _id: this._id,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    )
+}
 
 
 
