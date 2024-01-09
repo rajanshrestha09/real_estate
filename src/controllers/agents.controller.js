@@ -10,8 +10,10 @@ const generateAccessAndRefreshToken = async (agentId) => {
         const accessToken = agent.generateAccessToken()
         const refreshToken = agent.generateRefreshToken()
 
-        agent.refreshToken = refreshToken
+        agent.refreshToken = refreshToken // add refreshToken into database
         await agent.save({ validateBeforeSave: false })
+
+        console.table(`Access token: ${accessToken} &&& Refresh token: ${refreshToken}`);
 
         return { accessToken, refreshToken }
     } catch (error) {
@@ -74,8 +76,47 @@ const registerAgent = asyncHandler(async (req, res) => {
 })
 
 const loginAgent = asyncHandler(async (req, res) => {
-    const {email, licenseNumber, password} = req.body
-    console.log(email, licenseNumber, password); 
+    const { email, licenseNumber, password } = req.body
+    // console.log(email, licenseNumber, password); 
+
+    if (!email && !licenseNumber) {
+        throw new ApiError(400, "email or licenseNumber is required")
+    }
+
+    const agent = await Agent.findOne({
+        $or: [{ email }, { licenseNumber }]
+    })
+
+    if (!agent) {
+        throw new ApiError(400, "User doesn't exist")
+    }
+
+    const isPasswordValid = await agent.isPasswordCorrect(password)
+    if (!isPasswordValid) {
+        throw new ApiError(400, "Invalid password")
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(agent._id)
+
+    const loggedInAgent = await Agent.findById(agent._id).select("-password -refreshToken")
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                { agent: loggedInAgent, accessToken, refreshToken },
+                "Agent logged In successfully"
+            )
+        )
+
 })
 
 
