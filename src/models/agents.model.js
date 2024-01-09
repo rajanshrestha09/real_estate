@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import bcypt from "bcrypt"
 
 
 const agentSchema = new Schema(
@@ -52,6 +53,12 @@ const agentSchema = new Schema(
         timestamps: true
     }
 )
+
+agentSchema.pre("save",async function(next){
+    if(!this.isModified("password")) return next();
+    this.password = await bcypt.hash(this.password, 10);
+    next();
+})
 
 
 
