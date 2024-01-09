@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import bcypt from "bcrypt"
+import bcypt from "bcrypt";
+import jwt from "jsonwebtoken"
 
 
 const agentSchema = new Schema(
@@ -48,6 +49,9 @@ const agentSchema = new Schema(
         profileImage: {
             type: String,
         },
+        refreshToken:{
+            type: String
+        }
     },
     {
         timestamps: true
@@ -59,6 +63,16 @@ agentSchema.pre("save",async function(next){
     this.password = await bcypt.hash(this.password, 10);
     next();
 })
+
+agentSchema.methods.isPasswordCorrect = async function(password){
+    return await bcypt.compare(password, this.password)
+}
+
+agentSchema.methods.generateAccessToken = await jwt.sign(
+    {
+
+    }
+)
 
 
 
