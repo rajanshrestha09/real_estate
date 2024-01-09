@@ -85,7 +85,7 @@ agentSchema.methods.generateAccessToken = function () {
 
 
 agentSchema.methods.generateRefreshToken = function () {
-    jwt.sign(
+    return jwt.sign(
         {
             _id: this._id,
         },
