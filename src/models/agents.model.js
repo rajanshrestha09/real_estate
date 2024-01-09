@@ -24,7 +24,7 @@ const agentSchema = new Schema(
             type: String,
             validate: {
                 validator: function (value) {
-                    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z!@#$%^&*()_+]{8,}$/.test(value)
+                    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/.test(value)
                 },
                 message: props => `${props.value} is not valid password`
             },
@@ -52,5 +52,7 @@ const agentSchema = new Schema(
         timestamps: true
     }
 )
+
+
 
 export const Agent = mongoose.model("Agent", agentSchema)
