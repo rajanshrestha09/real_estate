@@ -22,7 +22,7 @@ const generateAccessAndRefreshToken = async (agentId) => {
 }
 
 
-
+// ======== Register Agent ===============
 const registerAgent = asyncHandler(async (req, res) => {
     const { firstName, lastName, email, password, phone, licenseNumber } = req.body;
     // console.log(firstName, lastName, password)
@@ -75,6 +75,7 @@ const registerAgent = asyncHandler(async (req, res) => {
     )
 })
 
+// ======== Login Agent ===============
 const loginAgent = asyncHandler(async (req, res) => {
     const { email, licenseNumber, password } = req.body
     // console.log(email, licenseNumber, password); 
@@ -119,10 +120,34 @@ const loginAgent = asyncHandler(async (req, res) => {
 
 })
 
+// ======== Logout Agent ===============
+const logoutAgent = asyncHandler(async (req, res) => {
+    await Agent.findByIdAndUpdate(
+        req.agent._id,
+        {
+            $unset: {
+                refreshToken: 1 //This removes the field from document
+            }
+        },
+        {
+            new: true
+        }
+    )
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
 
+    return res
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(200, {}, "User logged out"))
+})
 
 
 export {
     registerAgent,
-    loginAgent
+    loginAgent,
+    logoutAgent
 }
