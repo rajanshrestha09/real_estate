@@ -73,11 +73,15 @@ const registerAgent = asyncHandler(async (req, res) => {
     )
 })
 
-
+const loginAgent = asyncHandler(async (req, res) => {
+    const {email, licenseNumber, password} = req.body
+    console.log(email, licenseNumber, password); 
+})
 
 
 
 
 export {
-    registerAgent
+    registerAgent,
+    loginAgent
 }

@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { registerAgent } from "../controllers/agents.controller.js"
+import { registerAgent, loginAgent } from "../controllers/agents.controller.js"
 import { upload } from "../middlewares/multer.middleware.js"
 
 
@@ -15,6 +15,6 @@ router.route("/register").post(
     )
     , registerAgent)
 
-
+router.route("/login").post(loginAgent)
 
 export default router
