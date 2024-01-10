@@ -6,7 +6,8 @@ import {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentAgent,
-    updateAgentDetails
+    updateAgentDetails,
+    updateAgentProfilePhoto
 } from "../controllers/agents.controller.js"
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
@@ -31,5 +32,6 @@ router.route("/refresh-token").post(refreshAccessToken)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 router.route("/current-agent").get(verifyJWT, getCurrentAgent)
 router.route("/update-agent").patch(verifyJWT, updateAgentDetails)
+router.route("/update-profile").patch(verifyJWT, upload.single("profileImage") ,updateAgentProfilePhoto)
 
 export default router

@@ -257,6 +257,41 @@ const updateAgentDetails = asyncHandler(async (req, res) => {
 
 })
 
+// ========== Update Profile Photo ==============
+const updateAgentProfilePhoto = asyncHandler(async (req, res) => {
+    const profileImageLocalPath = req.file?.path
+    //    console.log(profileImageLocalPath);
+
+    if (!profileImageLocalPath) {
+        throw new ApiError(400, "Profile photo is missing")
+    }
+
+    const profileImage = await uploadOnCloudinary(profileImageLocalPath)
+
+    if (!profileImage) {
+        throw new ApiError(400, "Error while uploading profile picture")
+    }
+
+    const agent = await Agent.findByIdAndUpdate(
+        req.agent?._id,
+        {
+            $set: {
+                profileImage: profileImage.url
+            }
+        },
+        { new: true }
+    ).select("-password")
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                agent,
+                "Profile Picture updated successfully"
+            )
+        )
+})
 
 
 export {
@@ -266,5 +301,6 @@ export {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentAgent,
-    updateAgentDetails
+    updateAgentDetails,
+    updateAgentProfilePhoto
 }
