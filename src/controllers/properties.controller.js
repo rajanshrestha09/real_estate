@@ -49,7 +49,7 @@ const addProperties = asyncHandler(async (req, res) => {
     const localPropertiesImage = req.files;
     console.log(localPropertiesImage[0]);
     console.log(localPropertiesImage[1]);
-   
+
 
     if (!localPropertiesImage) {
         throw new ApiError(400, "Please upload images of property")
@@ -98,6 +98,67 @@ const addProperties = asyncHandler(async (req, res) => {
 
 })
 
+const updatePropertiesDetails = asyncHandler(async (req, res) => {
+    const { propertyId } = (req.params);
+    if (!propertyId) {
+        throw new ApiError(400, "Please provide valid property Id")
+    }
+    const {
+        title,
+        description,
+        address,
+        city,
+        state,
+        zip,
+        price,
+        squareFootage,
+        bedroom,
+        bathroom,
+        garage,
+        yearBuilt,
+        status,
+    } = req.body;
+
+    // console.log(title);
+
+    if (!title || !description || !address || !city || !state || !zip || !price || !squareFootage || !bedroom || !bathroom || !garage || !yearBuilt || !status) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const updateProperty = await Property.findByIdAndUpdate(propertyId,
+        {
+            $set: {
+                title,
+                description,
+                address,
+                city,
+                state,
+                zip,
+                price,
+                squareFootage,
+                bedroom,
+                bathroom,
+                garage,
+                yearBuilt,
+                status,
+            }
+        },
+        { new: true }
+    )
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                updateProperty,
+                "Property Details update successfully"
+            )
+        )
 
 
-export { addProperties }
+
+})
+
+
+export { addProperties, updatePropertiesDetails }
