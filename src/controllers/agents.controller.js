@@ -226,11 +226,45 @@ const getCurrentAgent = asyncHandler(async (req, res) => {
         )
 })
 
+// ========== Update Agent ==============
+const updateAgentDetails = asyncHandler(async (req, res) => {
+    const { firstName, lastName, email, phone } = req.body;
+
+    if (!firstName || !lastName || !email || !phone) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const agent = await Agent.findByIdAndUpdate(
+        req.agent?._id,
+        {
+            $set: {
+                firstName,
+                lastName,
+                email,
+                phone
+            }
+        },
+        { new: true }
+    ).select("-password")
+
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            agent,
+            "User update successfully"
+        ))
+
+})
+
+
+
 export {
     registerAgent,
     loginAgent,
     logoutAgent,
     refreshAccessToken,
     changeCurrentPassword,
-    getCurrentAgent
+    getCurrentAgent,
+    updateAgentDetails
 }
