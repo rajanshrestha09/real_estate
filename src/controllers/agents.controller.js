@@ -14,7 +14,7 @@ const generateAccessAndRefreshToken = async (agentId) => {
         agent.refreshToken = refreshToken // add refreshToken into database
         await agent.save({ validateBeforeSave: false })
 
-        console.table(`Access token: ${accessToken} &&& Refresh token: ${refreshToken}`);
+        // console.table(`Access token: ${accessToken} &&& Refresh token: ${refreshToken}`);
 
         return { accessToken, refreshToken }
     } catch (error) {
@@ -182,7 +182,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             .json(
                 new ApiResponse(
                     200,
-                    {accessToken, refreshToken: newRefreshToken},
+                    { accessToken, refreshToken: newRefreshToken },
                     "Access token refresher"
                 )
             )
@@ -192,10 +192,31 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 })
 
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword } = req.body
+
+    // console.log(oldPassword, newPassword);
+    const agent = await Agent.findById(req.agent?._id)
+    const isPasswordCorrect = await agent.isPasswordCorrect(oldPassword)
+
+    // console.log(isPasswordCorrect);
+    if (!isPasswordCorrect) {
+        throw new ApiError(400, "Invalid old password")
+    }
+
+    agent.password = newPassword
+    await agent.save({ validateBeforeSave: false })
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200,{}, "Password Change Successfully"))
+})
+
 
 export {
     registerAgent,
     loginAgent,
     logoutAgent,
-    refreshAccessToken
+    refreshAccessToken,
+    changeCurrentPassword
 }
