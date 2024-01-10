@@ -6,25 +6,23 @@ import { Agent } from "../models/agents.model.js";
 
 export const verifyJWT = asyncHandler(async (req, _, next) => {
     try {
-        console.log(req);
+        // console.log(req);
         const token = req.cookies?.accessToken || req.header("Aurhorization")?.replace("Bearer", "")
-        console.log("Token: ", token);
+        // console.log("Token: ", token);
 
-        if(!token){
+        if (!token) {
             throw new ApiError(401, "Unauthorized request")
         }
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+        // console.log(decodedToken);
+        const agent = await Agent.findById(decodedToken?._id).select("-password -refreshToken")
 
-       const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+        if (!agent) {
+            throw new ApiError(401, "Invalid Access Token")
+        }
 
-       const agent = await Agent.findById(decodedToken?._id).select("-password -refreshToken")
-
-       if(!agent){
-        throw new ApiError(401, "Invalid Access Token")
-       }
-
-       req.agent = agent
-
-       next()
+        req.agent = agent
+        next()
 
     } catch (error) {
         throw new ApiError(401, error?.message || "Invalid access token")
