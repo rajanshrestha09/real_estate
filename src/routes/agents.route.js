@@ -7,7 +7,7 @@ import {
     changeCurrentPassword,
     getCurrentAgent,
     updateAgentDetails,
-    updateAgentProfilePhoto
+    updateAgentProfilePhoto,
 } from "../controllers/agents.controller.js"
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"

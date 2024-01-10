@@ -21,5 +21,7 @@ import registerAgent from "./routes/agents.route.js";
 
 app.use("/api/v1/agent", registerAgent)
 
+import addPropertiesRoute from "./routes/properites.route.js"
+app.use("/api/v1/properties", addPropertiesRoute)
 
 export {app}

@@ -302,5 +302,6 @@ export {
     changeCurrentPassword,
     getCurrentAgent,
     updateAgentDetails,
-    updateAgentProfilePhoto
+    updateAgentProfilePhoto,
+
 }
