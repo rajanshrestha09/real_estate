@@ -146,6 +146,7 @@ const logoutAgent = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "User logged out"))
 })
 
+// ========= Refresh Access Token =================
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies?.refreshToken || req.body.refreshToken
 
@@ -192,6 +193,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 })
 
+// =========== Password Change ================= 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body
 
@@ -209,14 +211,26 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200,{}, "Password Change Successfully"))
+        .json(new ApiResponse(200, {}, "Password Change Successfully"))
 })
 
+// ========== Current Agent ==============
+const getCurrentAgent = asyncHandler(async (req, res) => {
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            req.agent,
+            "User fetched successfully"
+        )
+        )
+})
 
 export {
     registerAgent,
     loginAgent,
     logoutAgent,
     refreshAccessToken,
-    changeCurrentPassword
+    changeCurrentPassword,
+    getCurrentAgent
 }
